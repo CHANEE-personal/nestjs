@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseFilters } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Model } from '../entities/model.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,14 +11,22 @@ export class ModelService {
         private modelRepository: Repository<Model>) {}
 
 
-    /**    
-     * Method : getAll
-     * 2021.11.03
-     * description: 모델 리스트 조회 By Cho
-     * @returns 
-     */
-    getAll() {
-        return this.modelRepository.find();
+    /**
+	 * <pre>
+	 * 1. MethodName : getAll
+	 * 2. ClassName  : model.service.ts
+	 * 3. Comment    : 모델 리스트 조회
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 03.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */    
+    async getModelList(categoryCd: number): Promise<Model[]>  {
+        return this.modelRepository.createQueryBuilder()
+                    .where('category_cd = :categoryCd', {categoryCd: categoryCd})
+                    .getMany();
     }  
     
     
@@ -27,7 +35,7 @@ export class ModelService {
      * @param idx 
      * @returns 
      */
-    getOne(idx: number) {
+    async getOne(idx: number): Promise<Model> {
         const model = this.modelRepository.createQueryBuilder()
         .where('idx = :idx', {idx: idx})
         .getOne();
