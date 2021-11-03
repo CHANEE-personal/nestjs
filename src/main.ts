@@ -8,6 +8,9 @@ async function bootstrap() {
 
   setupSwagger(app);
 
+  //CORS 처리
+  app.enableCors();
+
   //전역 범위 파이프
   app.useGlobalPipes(new ValidationPipe({
       whitelist: true,  //  validation을 위한 decorator가 붙어있지 않은 속성들은 제거

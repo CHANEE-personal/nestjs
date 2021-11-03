@@ -1,6 +1,8 @@
-import { Controller, Get, Param, UseFilters } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseFilters } from '@nestjs/common';
 import { ModelService } from '../service/model.service';
 import { Model } from '../entities/model.entity';
+import { PaginatedModelsResultDto } from 'src/page/PaginatedModelsResult.dto';
+import { PaginationDto } from 'src/page/page.dto';
 
 @Controller('api/model')
 export class ModelController {
@@ -21,24 +23,10 @@ export class ModelController {
 	 * @throws Exception
 	 */
     @Get('lists/:categoryCd')
-    async getModelList(@Param('categoryCd') categoryCd: number): Promise<Map<String, Object>> {
+    async getModelList(@Param('categoryCd') categoryCd: number, @Query() paginationDto: PaginationDto): Promise<PaginatedModelsResultDto> {
 
-        let modelMap = new Map<String, Object>();
+		return await this.modelService.getModelList(categoryCd, paginationDto);
 
-        let modelListCnt: number = await this.modelService.getModelCnt(categoryCd);
-
-        let modelList = null;
-
-        if(modelListCnt > 0) {
-            modelList = await this.modelService.getModelList(categoryCd);
-        }
-
-        modelMap.set("modelListCnt", modelListCnt);
-        modelMap.set("modelList", modelList);    
-        
-
-        console.log(modelMap);
-        return modelMap;
     }
 
     /**
