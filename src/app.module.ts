@@ -4,7 +4,9 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ModelModule } from './model/model.module';
+import { ProductionModule } from './production/production.module';
 import { Model } from './model/entities/model.entity';
+import { Production } from './production/entities/production.entity';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { Model } from './model/entities/model.entity';
     }),
     TypeOrmModule.forRoot({     
       type: 'mysql',
-      entities: [Model],
+      entities: [Model, Production],
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       host: process.env.DB_HOST,
@@ -23,7 +25,8 @@ import { Model } from './model/entities/model.entity';
       logging: true,
       synchronize: false,
     }),
-    ModelModule
+    ModelModule,
+    ProductionModule
   ],
   controllers: [AppController],
   providers: [AppService],
