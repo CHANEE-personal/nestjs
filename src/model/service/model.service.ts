@@ -3,13 +3,13 @@ import { Model } from '../entities/model.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginatedModelsResultDto } from 'src/page/PaginatedModelsResult.dto';
 import { PaginationDto } from 'src/page/page.dto';
-import { Repository } from 'typeorm';
+import { getConnection, Repository, Transaction, TransactionRepository } from 'typeorm';
 
 @Injectable()
 export class ModelService {
 
     constructor(
-        @InjectRepository(Model)
+        @InjectRepository(Model)		
         private modelRepository: Repository<Model>) {}
 
 
@@ -89,7 +89,57 @@ export class ModelService {
 	 */
 	async insertModel(model: Model) {
 		const newModel = this.modelRepository.create(model);
-		return this.modelRepository.save(newModel);
+		return await this.modelRepository.save(newModel);
+	}
+
+	/**
+	 * <pre>
+	 * 1. MethodName : updateModel
+	 * 2. ClassName  : model.service.ts
+	 * 3. Comment    : 모델 수정
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 04.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */	
+	async updateModel(model: Model, idx: number) {
+
+		const queryRunner = getConnection().createQueryRunner();
+		await queryRunner.connect();
+
+		await queryRunner.startTransaction();
+
+		try {
+
+			await this.modelRepository.createQueryBuilder()		
+			.update(model)
+			.set({
+				category_cd: model.category_cd,
+				category_nm: model.category_nm,
+				model_kor_name: model.model_kor_name,
+				model_eng_name: model.model_eng_name,
+				height: model.height,
+				size3: model.size3,
+				shoes: model.shoes,
+				model_description: model.model_description,
+				visible: model.visible,
+				updater: 1,
+				update_time: new Date()
+			})
+			.where('idx = :idx', {idx: idx})
+			.execute();
+
+			await queryRunner.commitTransaction();
+
+			return 1;
+
+		} catch (err) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
 	}
 }
 
