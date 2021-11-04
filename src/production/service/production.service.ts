@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Production } from '../entities/production.entity';
 import { PaginatedModelsResultDto } from 'src/page/PaginatedModelsResult.dto';
 import { PaginationDto } from 'src/page/page.dto';
-import { Repository } from 'typeorm';
+import { getConnection, Repository, Transaction, TransactionRepository } from 'typeorm';
 
 @Injectable()
 export class ProductionService {
@@ -84,17 +84,83 @@ export class ProductionService {
 	 * @return result
 	 * @throws Exception
 	 */
-    async insertProduction(production: Production) {
-        // const result = this.productionRepository.createQueryBuilder()
-        //                 .insert()
-        //                 .into(Production)
-        //                 .values([
-        //                     {}
-        //                 ])
-        //                 .execute();
+    async insertProduction(production: Production) {        
 
-        const newProduction = this.productionRepository.create(production);
-        return this.productionRepository.save(newProduction);        
+        // const newProduction = this.productionRepository.create(production);
+        // return this.productionRepository.save(newProduction);        
+
+        const queryRunner = getConnection().createQueryRunner();
+		await queryRunner.connect();
+
+		await queryRunner.startTransaction();
+
+		try {
+
+			await this.productionRepository.createQueryBuilder()		
+			.insert()
+			.into(Production)
+			.values([{
+				title: production.title,
+				description: production.description,				
+				visible: production.visible,
+				updater: 1,
+				update_time: new Date()
+			}])			
+			.execute();
+
+			await queryRunner.commitTransaction();
+
+			return 1;
+
+		} catch (err) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
         
     }
+
+    /**
+	 * <pre>
+	 * 1. MethodName : updateProduction
+	 * 2. ClassName  : production.service.ts
+	 * 3. Comment    : 프로덕션 수정
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 04.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */	
+	async updateProduction(production: Production, idx: number) {
+
+		const queryRunner = getConnection().createQueryRunner();
+		await queryRunner.connect();
+
+		await queryRunner.startTransaction();
+
+		try {
+
+			await this.productionRepository.createQueryBuilder()		
+			.update(production)
+			.set({
+				title: production.title,
+				description: production.description,				
+				visible: production.visible,
+				updater: 1,
+				update_time: new Date()
+			})
+			.where('idx = :idx', {idx: idx})
+			.execute();
+
+			await queryRunner.commitTransaction();
+
+			return 1;
+
+		} catch (err) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
+	}
 }

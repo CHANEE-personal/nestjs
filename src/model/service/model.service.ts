@@ -88,8 +88,43 @@ export class ModelService {
 	 * @throws Exception
 	 */
 	async insertModel(model: Model) {
-		const newModel = this.modelRepository.create(model);
-		return await this.modelRepository.save(newModel);
+		// const newModel = this.modelRepository.create(model);
+		// return await this.modelRepository.save(newModel);
+
+		const queryRunner = getConnection().createQueryRunner();
+		await queryRunner.connect();
+
+		await queryRunner.startTransaction();
+
+		try {
+
+			await this.modelRepository.createQueryBuilder()		
+			.insert()
+			.into(Model)
+			.values([{
+				category_cd: model.category_cd,
+				category_nm: model.category_nm,
+				model_kor_name: model.model_kor_name,
+				model_eng_name: model.model_eng_name,
+				height: model.height,
+				size3: model.size3,
+				shoes: model.shoes,
+				model_description: model.model_description,
+				visible: model.visible,
+				updater: 1,
+				update_time: new Date()
+			}])			
+			.execute();
+
+			await queryRunner.commitTransaction();
+
+			return 1;
+
+		} catch (err) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
 	}
 
 	/**

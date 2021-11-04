@@ -75,4 +75,27 @@ export class ProductionController {
          }
      }
 
+     /**
+	 * <pre>
+	 * 1. MethodName : updateModel
+	 * 2. ClassName  : model.controller.ts
+	 * 3. Comment    : 모델 수정
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 04.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */
+	@Post(':idx')
+	@ApiOperation({ summary: '프로덕션 수정 API', description: '프로덕션을 수정한다.' })
+	@ApiCreatedResponse({ description: '프로덕션을 수정한다.', type: Production })
+	async updateProduction(@Body() production: Production, @Param('idx') idx: number): Promise<string> {
+		if(this.productionService.updateProduction(production, idx) != null) {
+			return "Y";
+		} else {
+			return "N";
+		}
+	}
+
 }
