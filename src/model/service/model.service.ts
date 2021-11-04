@@ -74,5 +74,22 @@ export class ModelService {
         }
         return model;
     }
+
+	/**
+	 * <pre>
+	 * 1. MethodName : insertModel
+	 * 2. ClassName  : model.service.ts
+	 * 3. Comment    : 모델 등록
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 04.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */
+	async insertModel(model: Model) {
+		const newModel = this.modelRepository.create(model);
+		return this.modelRepository.save(newModel);
+	}
 }
 

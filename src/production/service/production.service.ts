@@ -71,4 +71,30 @@ export class ProductionService {
         }
         return production;
     }
+
+    /**
+	 * <pre>
+	 * 1. MethodName : insertProduction
+	 * 2. ClassName  : production.service.ts
+	 * 3. Comment    : 프로덕션 등록
+	 * 4. 작성자       : CHO
+	 * 5. 작성일       : 2021. 11. 04.
+	 * </pre>
+	 *
+	 * @return result
+	 * @throws Exception
+	 */
+    async insertProduction(production: Production) {
+        // const result = this.productionRepository.createQueryBuilder()
+        //                 .insert()
+        //                 .into(Production)
+        //                 .values([
+        //                     {}
+        //                 ])
+        //                 .execute();
+
+        const newProduction = this.productionRepository.create(production);
+        return this.productionRepository.save(newProduction);        
+        
+    }
 }
