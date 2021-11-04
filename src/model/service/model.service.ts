@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, UseFilters } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { Model } from '../entities/model.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginatedModelsResultDto } from 'src/page/PaginatedModelsResult.dto';
 import { PaginationDto } from 'src/page/page.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ModelService {
@@ -70,7 +70,7 @@ export class ModelService {
         .getOne();
 
         if(!model) {
-            throw new NotFoundException(`user id ${idx} not found`);
+            throw new NotFoundException(`model idx ${idx} not found`);
         }
         return model;
     }

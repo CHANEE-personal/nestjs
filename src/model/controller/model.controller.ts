@@ -3,8 +3,10 @@ import { ModelService } from '../service/model.service';
 import { Model } from '../entities/model.entity';
 import { PaginatedModelsResultDto } from 'src/page/PaginatedModelsResult.dto';
 import { PaginationDto } from 'src/page/page.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/model')
+@ApiTags('모델 관련 API')
 export class ModelController {
 
     constructor(private readonly modelService: ModelService) {}
